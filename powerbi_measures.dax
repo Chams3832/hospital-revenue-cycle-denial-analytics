@@ -1,0 +1,26 @@
+// ==============================================================================
+// BUSINESS INTELLIGENCE MODELING: Power BI DAX Measures
+// ==============================================================================
+
+// 1. Dynamic Overall Claim Denial Rate
+Denial_Rate = 
+DIVIDE(
+    CALCULATE(COUNT(hospital_claims[Claim_ID]), hospital_claims[Claim_Status] = "Denied"),
+    COUNT(hospital_claims[Claim_ID]),
+    0
+)
+
+// 2. Gross Blocked Revenue (Revenue leakage at risk)
+Total_Revenue_At_Risk = 
+CALCULATE(
+    SUM(hospital_claims[Claim_Amount]), 
+    hospital_claims[Claim_Status] = "Denied"
+)
+
+// 3. Conditional Threshold Warning KPI Alert
+Denial_Alert_KPI = 
+IF(
+    [Denial_Rate] > 0.05, 
+    "⚠️ CRITICAL DENIAL RATE: Exceeds 5% Industry Threshold", 
+    "✅ COMPLIANT: Under control"
+)
