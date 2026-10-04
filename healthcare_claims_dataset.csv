@@ -1,0 +1,9 @@
+ Claim_ID,Patient_ID,Claim_Date,Department,Insurance_Provider,ICD10_Code,ICD10_Description,CPT_Code,Claim_Amount,Paid_Amount,Claim_Status,Denial_Reason_Code,Denial_Reason_Description,Days_In_AR
+CLM100000,PT200249,2026-03-24,Family Practice,Medicaid,I10,Essential (primary) hypertension,93000,2308.27,1657.42,Approved,N/A,N/A,44
+CLM100001,PT200424,2026-07-15,Emergency Medicine,Aetna,E66.9,Obesity unspecified,85025,3211.53,0.0,Denied,PR-204,Service not covered,112
+CLM100002,PT200101,2026-02-02,Cardiology,Medicare,E11.9,Type 2 diabetes mellitus,99214,1420.10,1210.50,Approved,N/A,N/A,32
+CLM100003,PT200550,2026-05-12,Orthopedics,BCBS,M17.11,Unilateral primary osteoarthritis right knee,27447,12500.00,0.0,Denied,CO-16,Claim lacks information,95
+CLM100004,PT200889,2026-08-19,Neurology,UnitedHealthcare,G43.909,Migraine unspecified not intractable,99213,350.00,280.00,Approved,N/A,N/A,15
+CLM100005,PT200312,2026-01-30,Cardiology,Medicare,I25.10,ASHD of native coronary artery w/o angina,93458,5400.00,0.0,Denied,CO-50,Medical necessity not met,88
+CLM100006,PT200761,2026-04-05,Emergency Medicine,Aetna,R07.9,Chest pain unspecified,93010,450.00,315.00,Approved,N/A,N/A,28
+CLM100007,PT200902,2026-09-02,Family Practice,BCBS,Z00.00,Encounter for general adult medical exam,99395,250.00,0.0,Denied,CO-18,Duplicate claim,61
