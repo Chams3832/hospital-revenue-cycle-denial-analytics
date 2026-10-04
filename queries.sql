@@ -1,13 +1,12 @@
 -- ==============================================================================
 -- PROJECT: Hospital Revenue Cycle & Medical Coding Denial Analytics
--- SCRIPT: Data Extraction & Key Performance Indicators (KPIs)
--- AUTHOR: [Votre Nom]
--- TARGET: Databricks / PostgreSQL / SQL Server
+-- SCRIPT: Data Extraction & Advanced Analytical Engineering
+-- TARGET: Databricks SQL / PostgreSQL / SQL Server
 -- ==============================================================================
 
 -- ------------------------------------------------------------------------------
--- REQUÊTE 1: Calcul des indicateurs clés (KPIs) globaux du réseau hospitalier
--- Objectif: Extraire le Taux de Refus global, le Revenu Bloqué et les Jours AR moyens
+-- QUERY 1: Global Executive RCM Financial KPIs
+-- Objective: Compute overall Denial Rate, Gross Billed, Revenue at Risk, and AR Days
 -- ------------------------------------------------------------------------------
 SELECT 
     COUNT(Claim_ID) AS Total_Claims_Submitted,
@@ -17,10 +16,9 @@ SELECT
     ROUND(AVG(Days_In_AR), 1) AS Average_Days_In_AR
 FROM hospital_claims;
 
-
 -- ------------------------------------------------------------------------------
--- REQUÊTE 2: Analyse de performance par organisme payeur (Assurances)
--- Objectif: Identifier quel assureur présente le plus haut taux de rejet financier
+-- QUERY 2: Insurance Payer Financial Risk Assessment
+-- Objective: Identify which payer presents the highest financial denial risk
 -- ------------------------------------------------------------------------------
 SELECT 
     Insurance_Provider,
@@ -32,10 +30,9 @@ FROM hospital_claims
 GROUP BY Insurance_Provider
 ORDER BY Total_Denied_Amount DESC;
 
-
 -- ------------------------------------------------------------------------------
--- REQUÊTE 3: Top 5 des codes de diagnostic (CIM-10-CM) causant le plus de pertes
--- Objectif: Repérer les erreurs de codage ou les manques de spécificité clinique
+-- QUERY 3: Top 5 Financial Leakage Drivers by ICD-10-CM Codes
+-- Objective: Pinpoint medical coding specificity errors causing high claim rejections
 -- ------------------------------------------------------------------------------
 SELECT 
     ICD10_Code,
@@ -48,18 +45,37 @@ GROUP BY ICD10_Code, ICD10_Description
 ORDER BY Total_Financial_Loss DESC
 LIMIT 5;
 
+-- ------------------------------------------------------------------------------
+-- QUERY 4: Advanced Window Function - Rank Denial Reasons Within Each Department
+-- Objective: Isolate the top 2 absolute root-cause denial codes per clinical specialty
+-- ------------------------------------------------------------------------------
+WITH RankedDenials AS (
+    SELECT 
+        Department,
+        Denial_Reason_Code,
+        Denial_Reason_Description,
+        SUM(Claim_Amount) AS Total_Loss,
+        RANK() OVER(PARTITION BY Department ORDER BY SUM(Claim_Amount) DESC) AS Denial_Rank
+    FROM hospital_claims
+    WHERE Claim_Status = 'Denied'
+    GROUP BY Department, Denial_Reason_Code, Denial_Reason_Description
+)
+SELECT * 
+FROM RankedDenials 
+WHERE Denial_Rank <= 2;
 
 -- ------------------------------------------------------------------------------
--- REQUÊTE 4: Analyse croisée des motifs de refus (Denial Reasons) par département
--- Objectif: Déterminer où cibler les formations d'audit de codage en interne
+-- QUERY 5: Correlation Matrix - Impact of Denials on Capital Liquidity (AR Days)
+-- Objective: Quantify cash flow delays comparing Approved vs. Denied claim pipelines
 -- ------------------------------------------------------------------------------
 SELECT 
-    Department,
-    Denial_Reason_Code,
-    Denial_Reason_Description,
-    COUNT(Claim_ID) AS Incident_Count,
-    SUM(Claim_Amount) AS Estimated_Leakage
+    Claim_Status,
+    COUNT(Claim_ID) AS Total_Claims,
+    ROUND(AVG(Days_In_AR), 1) AS Avg_Days_In_AR,
+    MAX(Days_In_AR) AS Max_Days_In_AR
 FROM hospital_claims
-WHERE Claim_Status = 'Denied'
-GROUP BY Department, Denial_Reason_Code, Denial_Reason_Description
-ORDER BY Estimated_Leakage DESC;
+GROUP BY Claim_Status;
+
+
+
+  
