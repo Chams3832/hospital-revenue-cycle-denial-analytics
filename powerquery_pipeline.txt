@@ -1,0 +1,7 @@
+let
+    Source = Csv.Document(File.Contents("C:\YourPath\healthcare_claims_dataset.csv"),[Delimiter=",", Columns=14, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Claim_ID", type text}, {"Patient_ID", type text}, {"Claim_Date", type date}, {"Department", type text}, {"Insurance_Provider", type text}, {"ICD10_Code", type text}, {"ICD10_Description", type text}, {"CPT_Code", type text}, {"Claim_Amount", type number}, {"Paid_Amount", type number}, {"Claim_Status", type text}, {"Denial_Reason_Code", type text}, {"Denial_Reason_Description", type text}, {"Days_In_AR", Int64.Type}}),
+    #"Filtered Denied Claims Only" = Table.SelectRows(#"Changed Type", each ([Claim_Status] = "Denied"))
+in
+    #"Filtered Denied Claims Only"
